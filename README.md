@@ -11,3 +11,6 @@ Table of Contents
 5. Data Analysis
 6. Folder Structure
 7. References
+
+Technologies
+
