@@ -1,6 +1,6 @@
 # sqlalchemy-challenge UofT Bootcamp
 
-Project Overview
+## Project Overview
 This project utilizes SQLAlchemy to analyze climate data from a SQLite database. The goal is to extract meaningful insights from weather station data and create a Flask API to serve climate-related queries.
 
 ## Table of Contents
@@ -23,31 +23,15 @@ This project utilizes SQLAlchemy to analyze climate data from a SQLite database.
 
 ## Setup Instructions
 
-Clone this repository:
+* Clone this repository: git clone https://github.com/yourusername/sqlalchemy-challenge.git
 
-git clone https://github.com/yourusername/sqlalchemy-challenge.git
+* Navigate to the project directory: cd sqlalchemy-challenge
 
-Navigate to the project directory:
+* Install dependencies
 
-cd sqlalchemy-challenge
+* Launch Jupyter Notebook for data exploration: jupyter notebook
 
-Create and activate a virtual environment:
-
-python -m venv venv
-source venv/bin/activate  # MacOS/Linux
-venv\Scripts\activate  # Windows
-
-Install dependencies:
-
-pip install -r requirements.txt
-
-Launch Jupyter Notebook for data exploration:
-
-jupyter notebook
-
-Run the Flask API:
-
-python app.py
+* Run the Flask API: python app.py
 
 ## Database Tables
 
@@ -91,17 +75,16 @@ The analysis focuses on:
 
 ## /project-root
 
-- **/LICENSE.txt**
-- **/README.md**
+- **LICENSE.txt**
+- **README.md**
 
 - **/SurfsUp**
-  - **app.py**:
-  - **climate_starter.ipynb**:
+  - **app.py**
+  - **climate_starter.ipynb**
   - **hawaii.sqlite**:
-
-    - **/EmployeeSQL**
-        - **hawaii_measurements.csv**: Contains data on departments.
-        - **hawaii_stations.csv**: Contains data on job titles.
+  - **/resources**
+      - **hawaii_measurements.csv**: Contains data on departments.
+      - **hawaii_stations.csv**: Contains data on job titles.
  
 ## References
 
