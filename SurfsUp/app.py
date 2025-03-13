@@ -10,13 +10,13 @@ from datetime import datetime, timedelta
 #################################################
 
 # Create engine to connect to SQLite database
-engine = create_engine("sqlite:///resources/hawaii.sqlite")
+engine = create_engine("sqlite:///hawaii.sqlite")
 
 # reflect an existing database into a new model
 Base = automap_base()
 
 # reflect the tables
-Base.prepare(engine, reflect=True)
+Base.prepare(autoload_with=engine)
 
 # Save references to each table
 Measurement = Base.classes.measurement
@@ -37,17 +37,70 @@ app = Flask(__name__)
 # Homepage route
 @app.route('/')
 def home():
-    """Welcome to the Climate API! Use the following routes: /api/v1.0/precipitation, /api/v1.0/stations, /api/v1.0/tobs, /api/v1.0/<start>, /api/v1.0/<start>/<end>"""
     return (
-
-    "Welcome to the Climate API!<br/>"
-    "Available Routes:<br/>"
-    "/api/v1.0/precipitation - Precipitation data for the last 12 months<br/>"
-    "/api/v1.0/stations - List of all weather stations<br/>"
-    "/api/v1.0/tobs - Temperature observations for the most active station<br/>"
-    "/api/v1.0/&lt;start&gt; - Min, Avg, and Max temperatures from a start date<br/>"
-    "/api/v1.0/&lt;start&gt;/&lt;end&gt; - Min, Avg, and Max temperatures for a date range"
+        """
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Climate API</title>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    background-color: #f4f4f4;
+                    color: #333;
+                    margin: 0;
+                    padding: 0;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    height: 100vh;
+                    text-align: left;
+                }
+                .container {
+                    background-color: #fff;
+                    padding: 20px;
+                    border-radius: 8px;
+                    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                }
+                h1 {
+                    color: #007BFF;
+                }
+                a {
+                    color: #007BFF;
+                    text-decoration: none;
+                }
+                a:hover {
+                    text-decoration: underline;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>Welcome to the Climate API!</h1>
+                <p>Explore the available routes below:</p>
+                <ul style="list-style-type: none; padding: 0;">
+                    <li><a href="/api/v1.0/precipitation">/api/v1.0/precipitation</a> - Precipitation data for the last 12 months</li>
+                    <li><a href="/api/v1.0/stations">/api/v1.0/stations</a> - List of all weather stations</li>
+                    <li><a href="/api/v1.0/tobs">/api/v1.0/tobs</a> - Temperature observations for the most active station</li>
+                    <li><a href="/api/v1.0/&lt;start&gt;">/api/v1.0/&lt;start&gt;</a> - Min, Avg, and Max temperatures from a start date</li>
+                    <li><a href="/api/v1.0/&lt;start&gt;/&lt;end&gt;">/api/v1.0/&lt;start&gt;/&lt;end&gt;</a> - Min, Avg, and Max temperatures for a date range</li>
+    
+               <div class="instructions">
+            <h3>How to Use the Date Routes:</h3>
+            <p>
+                To use the date-based routes, replace <code>&lt;start&gt;</code> and/or <code>&lt;end&gt;</code> in the URL with a valid date in the format <strong>YYYY-MM-DD</strong>.
+            </p>
+                </ul>
+            </div>
+        </body>
+        </html>
+        """
     )
+
+
+    
 
 # Precipitation route - returns last 12 months of data
 @app.route('/api/v1.0/precipitation')
@@ -65,7 +118,7 @@ def precipitation():
         # Query precipitation data
         results = session.query(Measurement.date, Measurement.prcp).\
             filter(Measurement.date >= twelve_months_ago_str).all()
-
+       
         # Convert results to a dictionary
         prcp_dict = {date: prcp for date, prcp in results}
 
@@ -88,27 +141,30 @@ def stations():
 def tobs():
     """Return temperature observations for the most active station from the last year."""
     with Session(engine) as session:
-        # Find the most active station
-        most_active_station = session.query(Measurement.station).\
-            group_by(Measurement.station).\
-            order_by(func.count(Measurement.station).desc()).first()
+        # Find the most active station (station with the most measurements)
+        most_active_station = session.query(Measurement.station, func.count(Measurement.station))\
+            .group_by(Measurement.station).order_by(func.count(Measurement.station).desc()).first()
 
-        if not most_active_station:
-            return jsonify({"error": "No data found for stations."}), 404
-
+        # Get the most active station ID
         station_id = most_active_station[0]
-
+        
         # Get the most recent date from the database
-        most_recent_date_text = session.query(func.max(Measurement.date)).scalar()
-        most_recent_date = datetime.strptime(most_recent_date_text, '%Y-%m-%d')
-        twelve_months_ago = most_recent_date - timedelta(days=365)
+        most_recent_date = session.query(func.max(Measurement.date)).scalar()
+        most_recent_date = datetime.strptime(most_recent_date, '%Y-%m-%d')
+        
+        # Calculate the date 1 year ago from the most recent date
+        one_year_ago = most_recent_date - timedelta(days=365)
+        one_year_ago_str = one_year_ago.strftime('%Y-%m-%d')
 
-        # Query temperature observations
+        # Query temperature observations for the most active station for the previous year
         results = session.query(Measurement.date, Measurement.tobs).\
             filter(Measurement.station == station_id).\
-            filter(Measurement.date >= twelve_months_ago.strftime('%Y-%m-%d')).all()
+            filter(Measurement.date >= one_year_ago_str).all()
 
-        tobs_list = [{"date": date, "tobs": tobs} for date, tobs in results]
+        # Convert results into a list of dictionaries with date and temperature observations
+        tobs_list = [{"date": date, "temperature": tobs} for date, tobs in results]
+
+        # Return the list as a JSON response
         return jsonify(tobs_list)
 
 @app.route('/api/v1.0/<start>')
@@ -121,20 +177,23 @@ def start_date(start):
         except ValueError:
             return jsonify({"error": "Invalid date format. Use YYYY-MM-DD."}), 400
 
+        # Query for TMIN, TAVG, and TMAX for dates >= start_date
         results = session.query(
-            func.min(Measurement.tobs),
-            func.avg(Measurement.tobs),
-            func.max(Measurement.tobs)
+            func.min(Measurement.tobs).label('TMIN'),
+            func.avg(Measurement.tobs).label('TAVG'),
+            func.max(Measurement.tobs).label('TMAX')
         ).filter(Measurement.date >= start_date.strftime('%Y-%m-%d')).all()
 
-        if not results[0][0]:
+        # Check if results are empty
+        if not results[0].TMIN:
             return jsonify({"error": "No data found for the given start date."}), 404
 
+        # Format the results as a JSON response
         return jsonify({
             "Start Date": start,
-            "Min Temperature": results[0][0],
-            "Avg Temperature": results[0][1],
-            "Max Temperature": results[0][2]
+            "TMIN": results[0].TMIN,
+            "TAVG": results[0].TAVG,
+            "TMAX": results[0].TMAX
         })
 
 @app.route('/api/v1.0/<start>/<end>')
