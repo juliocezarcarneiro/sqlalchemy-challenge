@@ -78,11 +78,11 @@ The analysis focuses on:
 - **LICENSE.txt**
 - **README.md**
 
-- **/SurfsUp**
+- **/SurfsUp**:
   - **app.py**
   - **climate_starter.ipynb**
-  - **hawaii.sqlite**:
-  - **/resources**
+  - **hawaii.sqlite**
+  - **/resources**:
       - **hawaii_measurements.csv**: Contains data on departments.
       - **hawaii_stations.csv**: Contains data on job titles.
  
