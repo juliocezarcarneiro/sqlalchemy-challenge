@@ -77,6 +77,7 @@ The analysis focuses on:
 
 ## /project-root
 
+- **image.png**
 - **LICENSE.txt**
 - **README.md**
 
