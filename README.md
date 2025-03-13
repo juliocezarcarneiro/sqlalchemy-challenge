@@ -1,5 +1,7 @@
 # sqlalchemy-challenge UofT Bootcamp
 
+![alt text](image.png)
+
 ## Project Overview
 This project utilizes SQLAlchemy to analyze climate data from a SQLite database. The goal is to extract meaningful insights from weather station data and create a Flask API to serve climate-related queries.
 
@@ -83,8 +85,8 @@ The analysis focuses on:
   - **climate_starter.ipynb**
   - **hawaii.sqlite**
   - **/resources**:
-      - **hawaii_measurements.csv**: Contains data on departments.
-      - **hawaii_stations.csv**: Contains data on job titles.
+      - **hawaii_measurements.csv**
+      - **hawaii_stations.csv**
  
 ## References
 
