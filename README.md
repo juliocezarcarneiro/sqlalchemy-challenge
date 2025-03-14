@@ -33,7 +33,9 @@ This project utilizes SQLAlchemy to analyze climate data from a SQLite database.
 
 * Launch Jupyter Notebook for data exploration: jupyter notebook
 
-* Run the Flask API: python app.py
+* Open the Terminal and run the Flask API: python app.py
+
+* Access the .HTML page and navigate trough the Climate API
 
 ## Database Tables
 
